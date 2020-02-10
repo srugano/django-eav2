@@ -1,16 +1,17 @@
-from django.test import TestCase
+import sys
+
 from django.contrib.admin.sites import AdminSite
+from django.core.handlers.base import BaseHandler
+from django.forms import ModelForm
+from django.test import TestCase
+from django.test.client import RequestFactory
 
 import eav
-import sys
-from eav.admin import *
-from .models import Patient, M2MModel, ExampleModel
-from eav.models import Attribute
+from eav.admin import BaseEntityAdmin
 from eav.forms import BaseDynamicEntityForm
-from django.contrib import admin
-from django.core.handlers.base import BaseHandler
-from django.test.client import RequestFactory
-from django.forms import ModelForm
+from eav.models import Attribute, EnumGroup, EnumValue
+
+from .models import ExampleModel, M2MModel, Patient
 
 
 class MockRequest(RequestFactory):
@@ -75,9 +76,9 @@ class Forms(TestCase):
         self.site = AdminSite()
 
     def test_fields(self):
-        admin = BaseEntityAdmin(Patient, self.site)
-        admin.form = BaseDynamicEntityForm
-        view = admin.change_view(request, str(self.instance.pk))
+        baseadmin = BaseEntityAdmin(Patient, self.site)
+        baseadmin.form = BaseDynamicEntityForm
+        view = baseadmin.change_view(request, str(self.instance.pk))
 
         own_fields = 2
         adminform = view.context_data['adminform']
@@ -97,6 +98,7 @@ class Forms(TestCase):
         form = PatientForm(dict(color='Blue'), instance=self.instance)
         with self.assertRaises(ValueError):
             jim = form.save()
+            return jim
 
     def test_valid_enums(self):
         self.instance.eav.gender = self.female

@@ -19,18 +19,18 @@ from django.db.models.base import ModelBase
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
 
-from .validators import (
-    validate_text,
-    validate_float,
-    validate_int,
-    validate_date,
-    validate_bool,
-    validate_object,
-    validate_enum
-)
+from . import register
 from .exceptions import IllegalAssignmentException
 from .fields import EavDatatypeField, EavSlugField
-from . import register
+from .validators import (
+    validate_bool,
+    validate_date,
+    validate_enum,
+    validate_float,
+    validate_int,
+    validate_object,
+    validate_text,
+)
 
 
 class EnumValue(models.Model):
@@ -73,8 +73,8 @@ class EnumGroup(models.Model):
 
     See :class:`EnumValue` for an example.
     """
-    name = models.CharField(_('Name'), unique = True, max_length = 100)
-    values = models.ManyToManyField(EnumValue, verbose_name = _('Enum group'))
+    name = models.CharField(_('Name'), unique=True, max_length=100)
+    values = models.ManyToManyField(EnumValue, verbose_name=_('Enum group'))
 
     def __str__(self):
         return '<EnumGroup {}>'.format(self.name)
@@ -131,36 +131,36 @@ class Attribute(models.Model):
     class Meta:
         ordering = ['name']
 
-    TYPE_TEXT    = 'text'
-    TYPE_FLOAT   = 'float'
-    TYPE_INT     = 'int'
-    TYPE_DATE    = 'date'
+    TYPE_TEXT = 'text'
+    TYPE_FLOAT = 'float'
+    TYPE_INT = 'int'
+    TYPE_DATE = 'date'
     TYPE_BOOLEAN = 'bool'
-    TYPE_OBJECT  = 'object'
-    TYPE_ENUM    = 'enum'
+    TYPE_OBJECT = 'object'
+    TYPE_ENUM = 'enum'
 
     DATATYPE_CHOICES = (
-        (TYPE_TEXT,    _('Text')),
-        (TYPE_DATE,    _('Date')),
-        (TYPE_FLOAT,   _('Float')),
-        (TYPE_INT,     _('Integer')),
+        (TYPE_TEXT, _('Text')),
+        (TYPE_DATE, _('Date')),
+        (TYPE_FLOAT, _('Float')),
+        (TYPE_INT, _('Integer')),
         (TYPE_BOOLEAN, _('True / False')),
-        (TYPE_OBJECT,  _('Django Object')),
-        (TYPE_ENUM,    _('Multiple Choice')),
+        (TYPE_OBJECT, _('Django Object')),
+        (TYPE_ENUM, _('Multiple Choice')),
     )
 
     # Core attributes
 
     datatype = EavDatatypeField(
-        verbose_name = _('Data Type'),
-        choices      = DATATYPE_CHOICES,
-        max_length   = 6
+        verbose_name=_('Data Type'),
+        choices=DATATYPE_CHOICES,
+        max_length=6
     )
 
     name = models.CharField(
-        verbose_name = _('Name'),
-        max_length   = 100,
-        help_text    = _('User-friendly attribute name')
+        verbose_name=_('Name'),
+        max_length=100,
+        help_text=_('User-friendly attribute name')
     )
 
     """
@@ -169,11 +169,11 @@ class Attribute(models.Model):
     (see :meth:`~eav.fields.EavSlugField.create_slug_from_name`).
     """
     slug = EavSlugField(
-        verbose_name = _('Slug'),
-        max_length   = 50,
-        db_index     = True,
-        unique       = True,
-        help_text    = _('Short unique attribute label')
+        verbose_name=_('Slug'),
+        max_length=50,
+        db_index=True,
+        unique=True,
+        help_text=_('Short unique attribute label')
     )
 
     """
@@ -182,40 +182,40 @@ class Attribute(models.Model):
         means that *all* entities that *can* have this attribute will
         be required to have a value for it.
     """
-    required = models.BooleanField(verbose_name = _('Required'), default = False)
+    required = models.BooleanField(verbose_name=_('Required'), default=False)
 
     enum_group = models.ForeignKey(
         EnumGroup,
-        verbose_name = _('Choice Group'),
-        on_delete    = models.PROTECT,
-        blank        = True,
-        null         = True
+        verbose_name=_('Choice Group'),
+        on_delete=models.PROTECT,
+        blank=True,
+        null=True
     )
 
     description = models.CharField(
-        verbose_name = _('Description'),
-        max_length   = 256,
-        blank        = True,
-        null         = True,
-        help_text    = _('Short description')
+        verbose_name=_('Description'),
+        max_length=256,
+        blank=True,
+        null=True,
+        help_text=_('Short description')
     )
 
     # Useful meta-information
 
     display_order = models.PositiveIntegerField(
-        verbose_name = _('Display order'),
-        default = 1
+        verbose_name=_('Display order'),
+        default=1
     )
 
     modified = models.DateTimeField(
-       verbose_name = _('Modified'),
-       auto_now     = True
+        verbose_name=_('Modified'),
+        auto_now=True
     )
 
     created = models.DateTimeField(
-       verbose_name = _('Created'),
-       default      = timezone.now,
-       editable     = False
+        verbose_name=_('Created'),
+        default=timezone.now,
+        editable=False
     )
 
     @property
@@ -233,13 +233,13 @@ class Attribute(models.Model):
            validators to return as well as the default, built-in one.
         """
         DATATYPE_VALIDATORS = {
-            'text':   validate_text,
-            'float':  validate_float,
-            'int':    validate_int,
-            'date':   validate_date,
-            'bool':   validate_bool,
+            'text': validate_text,
+            'float': validate_float,
+            'int': validate_int,
+            'date': validate_date,
+            'bool': validate_bool,
             'object': validate_object,
-            'enum':   validate_enum,
+            'enum': validate_enum,
         }
 
         return [DATATYPE_VALIDATORS[self.datatype]]
@@ -258,7 +258,7 @@ class Attribute(models.Model):
             if not self.enum_group.values.filter(value=value).exists():
                 raise ValidationError(
                     _('%(val)s is not a valid choice for %(attr)s')
-                    % dict(val = value, attr = self)
+                    % dict(val=value, attr=self)
                 )
 
     def save(self, *args, **kwargs):
@@ -312,21 +312,21 @@ class Attribute(models.Model):
 
         try:
             value_obj = self.value_set.get(
-                entity_ct = ct,
-                entity_id = entity.pk,
-                attribute = self
+                entity_ct=ct,
+                entity_id=entity.pk,
+                attribute=self
             )
         except Value.DoesNotExist:
-            if value == None or value == '':
+            if value is None or value == '':
                 return
 
             value_obj = Value.objects.create(
-                entity_ct = ct,
-                entity_id = entity.pk,
-                attribute = self
+                entity_ct=ct,
+                entity_id=entity.pk,
+                attribute=self
             )
 
-        if value == None or value == '':
+        if value is None or value == '':
             value_obj.delete()
             return
 
@@ -362,50 +362,50 @@ class Value(models.Model):
 
     entity_ct = models.ForeignKey(
         ContentType,
-        on_delete    = models.PROTECT,
-        related_name = 'value_entities'
+        on_delete=models.PROTECT,
+        related_name='value_entities'
     )
 
     entity_id = models.IntegerField()
-    entity = generic.GenericForeignKey(ct_field = 'entity_ct', fk_field = 'entity_id')
+    entity = generic.GenericForeignKey(ct_field='entity_ct', fk_field='entity_id')
 
-    value_text  = models.TextField(blank = True, null = True)
-    value_float = models.FloatField(blank = True, null = True)
-    value_int   = models.IntegerField(blank = True, null = True)
-    value_date  = models.DateTimeField(blank = True, null = True)
-    value_bool  = models.NullBooleanField(blank = True, null = True)
+    value_text = models.TextField(blank=True, null=True)
+    value_float = models.FloatField(blank=True, null=True)
+    value_int = models.IntegerField(blank=True, null=True)
+    value_date = models.DateTimeField(blank=True, null=True)
+    value_bool = models.NullBooleanField(blank=True, null=True)
 
-    value_enum  = models.ForeignKey(
+    value_enum = models.ForeignKey(
         EnumValue,
-        blank        = True,
-        null         = True,
-        on_delete    = models.PROTECT,
-        related_name = 'eav_values'
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name='eav_values'
     )
 
     generic_value_id = models.IntegerField(blank=True, null=True)
 
     generic_value_ct = models.ForeignKey(
         ContentType,
-        blank        = True,
-        null         = True,
-        on_delete    = models.PROTECT,
-        related_name ='value_values'
+        blank=True,
+        null=True,
+        on_delete=models.PROTECT,
+        related_name='value_values'
     )
 
     value_object = generic.GenericForeignKey(
-        ct_field = 'generic_value_ct',
-        fk_field = 'generic_value_id'
+        ct_field='generic_value_ct',
+        fk_field='generic_value_id'
     )
 
-    created = models.DateTimeField(_('Created'), default = timezone.now)
-    modified = models.DateTimeField(_('Modified'), auto_now = True)
+    created = models.DateTimeField(_('Created'), default=timezone.now)
+    modified = models.DateTimeField(_('Modified'), auto_now=True)
 
     attribute = models.ForeignKey(
         Attribute,
-        db_index     = True,
-        on_delete    = models.PROTECT,
-        verbose_name = _('Attribute')
+        db_index=True,
+        on_delete=models.PROTECT,
+        verbose_name=_('Attribute')
     )
 
     def save(self, *args, **kwargs):
@@ -488,7 +488,7 @@ class Entity(object):
             except Attribute.DoesNotExist:
                 raise AttributeError(
                     _('%(obj)s has no EAV attribute named %(attr)s')
-                    % dict(obj = self.instance, attr = name)
+                    % dict(obj=self.instance, attr=name)
                 )
 
             try:
@@ -528,8 +528,12 @@ class Entity(object):
         for attribute in self.get_all_attributes():
             if self._hasattr(attribute.slug):
                 attribute_value = self._getattr(attribute.slug)
-                if attribute.datatype == Attribute.TYPE_ENUM and not isinstance(attribute_value, EnumValue):
-                    attribute_value = EnumValue.objects.get(value=attribute_value)
+                if attribute.datatype == Attribute.TYPE_ENUM and not isinstance(
+                        attribute_value, EnumValue):
+                    try:
+                        attribute_value = EnumValue.objects.get(value=attribute_value)
+                    except EnumValue.DoesNotExist:
+                        attribute_value = None
                 attribute.save_value(self.instance, attribute_value)
 
     def validate_attributes(self):
@@ -562,7 +566,7 @@ class Entity(object):
                 except ValidationError as e:
                     raise ValidationError(
                         _('%(attr)s EAV field %(err)s')
-                        % dict(attr = attribute.slug, err = e)
+                        % dict(attr=attribute.slug, err=e)
                     )
 
         illegal = values_dict or (
@@ -582,8 +586,8 @@ class Entity(object):
         Get all set :class:`Value` objects for self.instance
         """
         return Value.objects.filter(
-            entity_ct = self.ct,
-            entity_id = self.instance.pk
+            entity_ct=self.ct,
+            entity_id=self.instance.pk
         ).select_related()
 
     def get_all_attribute_slugs(self):

@@ -13,6 +13,7 @@ Contributors, alphabetically:
  * MajekX (Adam Majczyk)
  * nicpottier (Nic Pottier)
  * pisemsky (Evgeny Pisemsky)
+ * srugano (Allan Stockman Rugano)
  * tavaresb (Bruno Tavares)
  * therefromhere (John Carter)
  * timlinux (Tim Sutton)

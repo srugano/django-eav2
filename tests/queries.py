@@ -30,7 +30,8 @@ class Queries(TestCase):
         ynu.values.add(self.no)
         ynu.values.add(self.unknown)
 
-        Attribute.objects.create(name='fever', datatype=Attribute.TYPE_ENUM, enum_group=ynu)
+        Attribute.objects.create(
+            name='fever', datatype=Attribute.TYPE_ENUM, enum_group=ynu)
 
     def tearDown(self):
         eav.unregister(Encounter)
@@ -42,11 +43,11 @@ class Queries(TestCase):
 
         data = [
             # Name,    age, fever, city,       country.
-            ['Anne',   3,   no,    'New York', 'USA'],
-            ['Bob',    15,  no,    'Bamako',   'Mali'],
-            ['Cyrill', 15,  yes,   'Kisumu',   'Kenya'],
-            ['Daniel', 3,   no,    'Nice',     'France'],
-            ['Eugene', 2,   yes,   'France',   'Nice']
+            ['Anne', 3, no, 'New York', 'USA'],
+            ['Bob', 15, no, 'Bamako', 'Mali'],
+            ['Cyrill', 15, yes, 'Kisumu', 'Kenya'],
+            ['Daniel', 3, no, 'Nice', 'France'],
+            ['Eugene', 2, yes, 'France', 'Nice']
         ]
 
         for row in data:
@@ -74,7 +75,8 @@ class Queries(TestCase):
         self.assertEqual(Patient.objects.get(eav__age=6), p1)
 
         Patient.objects.create(name='Fred', eav__age=6)
-        self.assertRaises(MultipleObjectsReturned, lambda: Patient.objects.get(eav__age=6))
+        self.assertRaises(MultipleObjectsReturned,
+                          lambda: Patient.objects.get(eav__age=6))
 
     def test_filtering_on_normal_and_eav_fields(self):
         self.init_data()
@@ -121,7 +123,7 @@ class Queries(TestCase):
         # Anne, Bob, Daniel
         q1 = Q(eav__fever=self.no)         # Anne, Bob, Daniel
         q2 = Q(eav__fever=self.yes)        # Cyrill, Eugene
-        q3 = Q(eav__country__contains='e') # Cyrill, Daniel, Eugene
+        q3 = Q(eav__country__contains='e')  # Cyrill, Daniel, Eugene
         q4 = q2 & q3                       # Cyrill, Daniel, Eugene
         q5 = (q1 | q4) & q1                # Anne, Bob, Daniel
         p = Patient.objects.filter(q5)

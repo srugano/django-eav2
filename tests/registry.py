@@ -1,6 +1,7 @@
+import sys
+
 from django.test import TestCase
 
-import sys
 import eav
 from eav.registry import EavConfig
 
@@ -81,9 +82,11 @@ class RegistryTests(TestCase):
         self.assertFalse(ExampleModel.objects.__class__.__name__ == 'EntityManager')
 
     def test_unregistering_via_metaclass(self):
-        self.assertTrue(ExampleMetaclassModel.objects.__class__.__name__ == 'EntityManager')
+        self.assertTrue(
+            ExampleMetaclassModel.objects.__class__.__name__ == 'EntityManager')
         eav.unregister(ExampleMetaclassModel)
-        self.assertFalse(ExampleMetaclassModel.objects.__class__.__name__ == 'EntityManager')
+        self.assertFalse(
+            ExampleMetaclassModel.objects.__class__.__name__ == 'EntityManager')
 
     def test_unregistering_unregistered_model_proceeds_silently(self):
         eav.unregister(Patient)

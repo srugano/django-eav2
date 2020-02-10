@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 
 # Pass settings into configure.
 settings.configure(
-    INSTALLED_APPS = [
+    INSTALLED_APPS=[
         'django.contrib.admin',
         'django.contrib.auth',
         'django.contrib.contenttypes',
@@ -55,10 +55,10 @@ extensions = [
 ]
 
 html_theme_options = dict(
-    show_powered_by = False,
-    show_related = True,
-    fixed_sidebar = True,
-    font_family = 'Roboto'
+    show_powered_by=False,
+    show_related=True,
+    fixed_sidebar=True,
+    font_family='Roboto'
 )
 
 templates_path = ['_templates']
@@ -116,7 +116,7 @@ html_sidebars = {
     ],
     '**': [
         'sidebarintro.html',
-                'localtoc.html',
+        'localtoc.html',
 
         'relations.html',
         'searchbox.html'

@@ -3,7 +3,7 @@ from django.test import TestCase
 import eav
 from eav.registry import EavConfig
 
-from .models import Patient, Encounter
+from .models import Encounter, Patient
 
 
 class RegistryTests(TestCase):
@@ -20,7 +20,6 @@ class RegistryTests(TestCase):
             generic_relation_attr = 'encounter_eav_values'
             generic_relation_related_name = 'encounters'
         eav.register(Encounter, EncounterEav)
-
 
     def test_registering_with_defaults(self):
         eav.register(Patient)

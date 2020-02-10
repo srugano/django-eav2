@@ -48,7 +48,7 @@ Typical application of the EAV model sets to solve the problem of sparse data wi
 Very common use case for EAV are custom product attributes in E-commerce implementations, such as Magento. [3]
 
  As a rule of thumb, EAV can be used when:
- 
+
  * Model attributes are to be added and removed by end users (or are unknowable in some different way). EAV supports these without ALTER TABLE statements and allows the attributes to be strongly typed and easily searchable.
  * There will be many attributes and values are sparse, in contrast to having tables with mostly-null columns.
  * The data is highly dynamic/volatile/vulnerable to change. This problem is present in the second example given above. Other example would be rapidly evolving system, such as a prototype with constantly changing requirements.

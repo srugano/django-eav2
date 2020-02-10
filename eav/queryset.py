@@ -19,8 +19,8 @@ Q-expressions need to be rewritten for two reasons:
 2. To ensure that Q-expression tree is compiled to valid SQL.
    For details see: :func:`rewrite_q_expr`.
 """
-from itertools import count
 from functools import wraps
+from itertools import count
 
 from django.core.exceptions import FieldError, ObjectDoesNotExist
 from django.db import models
@@ -28,7 +28,7 @@ from django.db.models import Case, IntegerField, Q, When
 from django.db.models.query import QuerySet
 from django.db.utils import NotSupportedError
 
-from .models import Attribute, Value, EnumValue
+from .models import Attribute, EnumValue, Value
 
 
 def is_eav_and_leaf(expr, gr_name):
@@ -43,9 +43,8 @@ def is_eav_and_leaf(expr, gr_name):
         bool
     """
     return (
-        getattr(expr, 'connector', None) == 'AND' and
-        len(expr.children) == 1 and
-        expr.children[0][0] in ['pk__in', '{}__in'.format(gr_name)]
+        getattr(expr, 'connector', None) == 'AND' and len(expr.children) == 1
+        and expr.children[0][0] in ['pk__in', '{}__in'.format(gr_name)]
     )
 
 
@@ -112,7 +111,7 @@ IGNORE
         if len(rewritable) > 1:
             q = None
             # Save nodes which shouldn't be merged (non-EAV).
-            other = [c for c in expr.children if not c in rewritable]
+            other = [c for c in expr.children if (not c) in rewritable]
 
             for child in rewritable:
                 if not (child.children and len(child.children) == 1):
@@ -140,7 +139,7 @@ IGNORE
 
                 # Explicitly check for None. 'or' doesn't work here
                 # as empty QuerySet, which is valid, is falsy.
-                q = q if q != None else _q
+                q = q if q is not None else _q
 
                 if expr.connector == 'AND':
                     q &= _q
@@ -149,7 +148,7 @@ IGNORE
 
             # If any two children were merged,
             # update parent expression.
-            if q != None:
+            if q is not None:
                 expr.children = other + [('pk__in', q)]
 
     return expr

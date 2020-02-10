@@ -1,11 +1,10 @@
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.test import TestCase
 from django.utils import timezone
 
-from django.test import TestCase
-from django.core.exceptions import ValidationError
-from django.contrib.auth.models import User
-
 import eav
-from eav.models import Attribute, Value, EnumValue, EnumGroup
+from eav.models import Attribute, EnumGroup, EnumValue, Value
 
 from .models import Patient
 
@@ -30,7 +29,8 @@ class DataValidation(TestCase):
         p.eav.age = 5
         p.save()
 
-        Attribute.objects.create(name='Weight', datatype=Attribute.TYPE_INT, required=True)
+        Attribute.objects.create(
+            name='Weight', datatype=Attribute.TYPE_INT, required=True)
         p.eav.age = 6
         self.assertRaises(ValidationError, p.save)
         p = Patient.objects.get(name='Bob')
@@ -41,7 +41,8 @@ class DataValidation(TestCase):
         self.assertEqual(p.eav.weight, 23)
 
     def test_create_required_field(self):
-        Attribute.objects.create(name='Weight', datatype=Attribute.TYPE_INT, required=True)
+        Attribute.objects.create(
+            name='Weight', datatype=Attribute.TYPE_INT, required=True)
         self.assertRaises(ValidationError,
                           Patient.objects.create,
                           name='Joe', eav__age=5)
@@ -106,7 +107,7 @@ class DataValidation(TestCase):
         p.eav.height = 15
         p.save()
         self.assertEqual(Patient.objects.get(pk=p.pk).eav.height, 15)
-        p.eav.height='2.3'
+        p.eav.height = '2.3'
         p.save()
         self.assertEqual(Patient.objects.get(pk=p.pk).eav.height, 2.3)
 
@@ -148,7 +149,8 @@ class DataValidation(TestCase):
         ynu.values.add(yes)
         ynu.values.add(no)
         ynu.values.add(unkown)
-        Attribute.objects.create(name='Fever?', datatype=Attribute.TYPE_ENUM, enum_group=ynu)
+        Attribute.objects.create(
+            name='Fever?', datatype=Attribute.TYPE_ENUM, enum_group=ynu)
 
         p = Patient.objects.create(name='Joe')
         p.eav.fever = 5

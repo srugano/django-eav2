@@ -1,8 +1,8 @@
 from django.test import TestCase
 
-from eav.models import EnumGroup, Attribute, Value, EnumValue
-
 import eav
+from eav.models import Attribute, EnumGroup, EnumValue, Value
+
 from .models import Patient
 
 
@@ -14,7 +14,8 @@ class MiscModels(TestCase):
 
     def test_attribute_help_text(self):
         desc = 'Patient Age'
-        a = Attribute.objects.create(name='age', description=desc, datatype=Attribute.TYPE_INT)
+        a = Attribute.objects.create(
+            name='age', description=desc, datatype=Attribute.TYPE_INT)
         self.assertEqual(a.help_text, desc)
 
     def test_setting_to_none_deletes_value(self):
@@ -32,7 +33,8 @@ class MiscModels(TestCase):
         ynu = EnumGroup.objects.create(name='Yes / No / Unknown')
         ynu.values.add(yes)
         ynu.values.add(no)
-        Attribute.objects.create(name='is_patient', datatype=Attribute.TYPE_ENUM, enum_group=ynu)
+        Attribute.objects.create(
+            name='is_patient', datatype=Attribute.TYPE_ENUM, enum_group=ynu)
         eav.register(Patient)
         p = Patient.objects.create(name='Joe')
         p.eav.is_patient = 'yes'

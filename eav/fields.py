@@ -35,7 +35,7 @@ class EavSlugField(models.SlugField):
         name = '_'.join(name.split())
 
         # Remove non alphanumeric characters.
-        return re.sub('[^\w]', '', name)
+        return re.sub(r'[^\w]', '', name)
 
 
 class EavDatatypeField(models.CharField):

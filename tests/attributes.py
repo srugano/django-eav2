@@ -1,7 +1,8 @@
+import sys
+
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-import sys
 import eav
 from eav.exceptions import IllegalAssignmentException
 from eav.models import Attribute, Value
